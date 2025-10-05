@@ -47,7 +47,7 @@ func (c *Client) GetAssistant(ctx context.Context, assistantID string) (*Assista
 	return &resp.Data, nil
 }
 
-func (c *Client) UpdateAssistant(ctx context.Context, assistantID string, req UpdateAssistantRequest) (*Assistant, error) {
+func (c *Client) UpdateAssistant(ctx context.Context, assistantID string, req CreateAssistantRequest) (*Assistant, error) {
 	trans := &CreateAssistantRequestTransformed{
 		Name: req.Name,
 		Description: req.Description,
