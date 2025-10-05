@@ -241,23 +241,20 @@ type Assistant struct {
 	ReRankModel     string                 `json:"rerank_model"`
 }
 
-type CreateAssistantRequestTransformed struct {
-	Name            string                 `json:"name"`
-	Description     string                 `json:"description,omitempty"`
-	Avatar          string                 `json:"avatar,omitempty"`
-	Language        string                 `json:"language,omitempty"`
-	Prompt          Prompt `json:"prompt,omitempty"`
-	LLMSetting      map[string]interface{} `json:"llm_setting,omitempty"`
-	LLMModel        string                 `json:"llm_model,omitempty"`
-	DatasetIDs      []string               `json:"dataset_ids,omitempty"`
-	VectorSimilarityWeight float64         `json:"vector_similarity_weight,omitempty"`
-	TopP            float64                `json:"top_p,omitempty"`
+type TransformLLM struct {
+	ModelName string `json:"model_name"`
 	Temperature     float64                `json:"temperature,omitempty"`
-	MaxTokens       int                    `json:"max_tokens,omitempty"`
+	TopP            float64                `json:"top_p,omitempty"`
 	PresencePenalty float64                `json:"presence_penalty,omitempty"`
 	FrequencyPenalty float64               `json:"frequency_penalty,omitempty"`
-	ReRank          bool                   `json:"rerank,omitempty"`
-	MaxReference    int                    `json:"max_reference,omitempty"`
+}
+
+type CreateAssistantRequestTransformed struct {
+	Name            string                 `json:"name"`
+	Avatar          string                 `json:"avatar,omitempty"`
+	Prompt          Prompt `json:"prompt,omitempty"`
+	LLMModel        TransformLLM `json:"llm,omitempty"`
+	DatasetIDs      []string               `json:"dataset_ids,omitempty"`
 }
 
 type CreateAssistantRequest struct {

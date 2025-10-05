@@ -10,14 +10,13 @@ import (
 func (c *Client) CreateAssistant(ctx context.Context, req CreateAssistantRequest) (*Assistant, error) {
 	trans := &CreateAssistantRequestTransformed{
 		Name: req.Name,
-		Description: req.Description,
 		Prompt: Prompt{
 			Prompt: req.Prompt,
 		},
-		LLMSetting: req.LLMSetting,
-		LLMModel: req.LLMModel,
+		LLMModel: TransformLLM{
+			ModelName: req.LLMModel,
+		},
 		DatasetIDs: req.DatasetIDs,
-		MaxTokens: req.MaxTokens,
 	}
 	httpReq, err := c.newRequest(ctx, http.MethodPost, "/api/v1/chats", trans)
 	if err != nil {
@@ -50,14 +49,13 @@ func (c *Client) GetAssistant(ctx context.Context, assistantID string) (*Assista
 func (c *Client) UpdateAssistant(ctx context.Context, assistantID string, req CreateAssistantRequest) (*Assistant, error) {
 	trans := &CreateAssistantRequestTransformed{
 		Name: req.Name,
-		Description: req.Description,
 		Prompt: Prompt{
 			Prompt: req.Prompt,
 		},
-		LLMSetting: req.LLMSetting,
-		LLMModel: req.LLMModel,
+		LLMModel: TransformLLM{
+			ModelName: req.LLMModel,
+		},
 		DatasetIDs: req.DatasetIDs,
-		MaxTokens: req.MaxTokens,
 	}
 	endpoint := fmt.Sprintf("/api/v1/chats/%s", assistantID)
 	httpReq, err := c.newRequest(ctx, http.MethodPut, endpoint, trans)
