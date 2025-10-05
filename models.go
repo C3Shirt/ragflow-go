@@ -196,17 +196,17 @@ type Variable struct {
 }
 
 type Prompt struct {
-	EmptyResponse             string     `json:"empty_response"`
-	KeywordsSimilarityWeight  float64    `json:"keywords_similarity_weight"`
-	Opener                    string     `json:"opener"`
-	Prompt                    string     `json:"prompt"`
-	RefineMultiturn           bool       `json:"refine_multiturn"`
-	RerankModel               string     `json:"rerank_model"`
-	ShowQuote                 bool       `json:"show_quote"`
-	SimilarityThreshold       float64    `json:"similarity_threshold"`
-	TopN                      int        `json:"top_n"`
-	TTS                       bool       `json:"tts"`
-	Variables                 []Variable `json:"variables"`
+	EmptyResponse             string     `json:"empty_response,omitempty"`
+	KeywordsSimilarityWeight  float64    `json:"keywords_similarity_weight,omitempty"`
+	Opener                    string     `json:"opener,omitempty"`
+	Prompt                    string     `json:"prompt,omitempty"`
+	RefineMultiturn           bool       `json:"refine_multitu,omitempty"`
+	RerankModel               string     `json:"rerank_model,omitempty"`
+	ShowQuote                 bool       `json:"show_quote,omitempty"`
+	SimilarityThreshold       float64    `json:"similarity_threshold,omitempty"`
+	TopN                      int        `json:"top_n,omitempty"`
+	TTS                       bool       `json:"tts,omitempty"`
+	Variables                 []Variable `json:"variables,omitempty"`
 }
 
 type LLMModelSettings struct {
@@ -241,49 +241,40 @@ type Assistant struct {
 	ReRankModel     string                 `json:"rerank_model"`
 }
 
-
 type CreateAssistantRequest struct {
 	Name            string                 `json:"name"`
 	Description     string                 `json:"description,omitempty"`
 	Avatar          string                 `json:"avatar,omitempty"`
 	Language        string                 `json:"language,omitempty"`
-	Prompt          string                 `json:"prompt,omitempty"`
+	Prompt          Prompt 				   `json:"prompt,omitempty"`
 	LLMSetting      map[string]interface{} `json:"llm_setting,omitempty"`
 	LLMModel        string                 `json:"llm_model,omitempty"`
 	DatasetIDs      []string               `json:"dataset_ids,omitempty"`
-	TopK            int                    `json:"top_k,omitempty"`
-	SimilarityThreshold float64            `json:"similarity_threshold,omitempty"`
 	VectorSimilarityWeight float64         `json:"vector_similarity_weight,omitempty"`
 	TopP            float64                `json:"top_p,omitempty"`
 	Temperature     float64                `json:"temperature,omitempty"`
 	MaxTokens       int                    `json:"max_tokens,omitempty"`
 	PresencePenalty float64                `json:"presence_penalty,omitempty"`
 	FrequencyPenalty float64               `json:"frequency_penalty,omitempty"`
-	ReRank          bool                   `json:"rerank,omitempty"`
-	EmptyResponse   string                 `json:"empty_response,omitempty"`
 	MaxReference    int                    `json:"max_reference,omitempty"`
 	ReRankModel     string                 `json:"rerank_model,omitempty"`
 }
 
 type UpdateAssistantRequest struct {
-	Name            string                 `json:"name,omitempty"`
+	Name            string                 `json:"name"`
 	Description     string                 `json:"description,omitempty"`
 	Avatar          string                 `json:"avatar,omitempty"`
 	Language        string                 `json:"language,omitempty"`
-	Prompt          string                 `json:"prompt,omitempty"`
+	Prompt          Prompt 				   `json:"prompt,omitempty"`
 	LLMSetting      map[string]interface{} `json:"llm_setting,omitempty"`
 	LLMModel        string                 `json:"llm_model,omitempty"`
 	DatasetIDs      []string               `json:"dataset_ids,omitempty"`
-	TopK            int                    `json:"top_k,omitempty"`
-	SimilarityThreshold float64            `json:"similarity_threshold,omitempty"`
 	VectorSimilarityWeight float64         `json:"vector_similarity_weight,omitempty"`
 	TopP            float64                `json:"top_p,omitempty"`
 	Temperature     float64                `json:"temperature,omitempty"`
 	MaxTokens       int                    `json:"max_tokens,omitempty"`
 	PresencePenalty float64                `json:"presence_penalty,omitempty"`
 	FrequencyPenalty float64               `json:"frequency_penalty,omitempty"`
-	ReRank          bool                   `json:"rerank,omitempty"`
-	EmptyResponse   string                 `json:"empty_response,omitempty"`
 	MaxReference    int                    `json:"max_reference,omitempty"`
 	ReRankModel     string                 `json:"rerank_model,omitempty"`
 }
