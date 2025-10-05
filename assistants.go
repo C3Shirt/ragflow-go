@@ -22,7 +22,7 @@ func (c *Client) CreateAssistant(ctx context.Context, req CreateAssistantRequest
 }
 
 func (c *Client) GetAssistant(ctx context.Context, assistantID string) (*Assistant, error) {
-	endpoint := fmt.Sprintf("/api/v1/chat/assistants/%s", assistantID)
+	endpoint := fmt.Sprintf("/api/v1/chats/%s", assistantID)
 	httpReq, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (c *Client) GetAssistant(ctx context.Context, assistantID string) (*Assista
 }
 
 func (c *Client) UpdateAssistant(ctx context.Context, assistantID string, req UpdateAssistantRequest) (*Assistant, error) {
-	endpoint := fmt.Sprintf("/api/v1/chat/assistants/%s", assistantID)
+	endpoint := fmt.Sprintf("/api/v1/chats/%s", assistantID)
 	httpReq, err := c.newRequest(ctx, http.MethodPut, endpoint, req)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (c *Client) UpdateAssistant(ctx context.Context, assistantID string, req Up
 }
 
 func (c *Client) DeleteAssistant(ctx context.Context, assistantID string) error {
-	endpoint := fmt.Sprintf("/api/v1/chat/assistants/%s", assistantID)
+	endpoint := fmt.Sprintf("/api/v1/chats/%s", assistantID)
 	httpReq, err := c.newRequest(ctx, http.MethodDelete, endpoint, nil)
 	if err != nil {
 		return err
@@ -94,7 +94,7 @@ func (c *Client) ListAssistants(ctx context.Context, opts *ListAssistantsOptions
 		}
 	}
 
-	url := c.buildURL("/api/v1/chat/assistants", params)
+	url := c.buildURL("/api/v1/chats", params)
 	httpReq, err := c.newRequest(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -124,7 +124,7 @@ func (c *Client) CreateSession(ctx context.Context, assistantID string, req Crea
 }
 
 func (c *Client) GetSession(ctx context.Context, assistantID, sessionID string) (*Session, error) {
-	endpoint := fmt.Sprintf("/api/v1/chat/assistants/%s/sessions/%s", assistantID, sessionID)
+	endpoint := fmt.Sprintf("/api/v1/chats/%s/sessions/%s", assistantID, sessionID)
 	httpReq, err := c.newRequest(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
@@ -139,7 +139,7 @@ func (c *Client) GetSession(ctx context.Context, assistantID, sessionID string) 
 }
 
 func (c *Client) UpdateSession(ctx context.Context, assistantID, sessionID string, req UpdateSessionRequest) (*Session, error) {
-	endpoint := fmt.Sprintf("/api/v1/chat/assistants/%s/sessions/%s", assistantID, sessionID)
+	endpoint := fmt.Sprintf("/api/v1/chats/%s/sessions/%s", assistantID, sessionID)
 	httpReq, err := c.newRequest(ctx, http.MethodPut, endpoint, req)
 	if err != nil {
 		return nil, err
@@ -154,7 +154,7 @@ func (c *Client) UpdateSession(ctx context.Context, assistantID, sessionID strin
 }
 
 func (c *Client) DeleteSession(ctx context.Context, assistantID, sessionID string) error {
-	endpoint := fmt.Sprintf("/api/v1/chat/assistants/%s/sessions/%s", assistantID, sessionID)
+	endpoint := fmt.Sprintf("/api/v1/chats/%s/sessions/%s", assistantID, sessionID)
 	httpReq, err := c.newRequest(ctx, http.MethodDelete, endpoint, nil)
 	if err != nil {
 		return err
@@ -196,7 +196,7 @@ func (c *Client) ListSessions(ctx context.Context, assistantID string, opts *Lis
 		}
 	}
 
-	endpoint := fmt.Sprintf("/api/v1/chat/assistants/%s/sessions", assistantID)
+	endpoint := fmt.Sprintf("/api/v1/chats/%s/sessions", assistantID)
 	url := c.buildURL(endpoint, params)
 	httpReq, err := c.newRequest(ctx, http.MethodGet, url, nil)
 	if err != nil {
