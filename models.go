@@ -99,7 +99,7 @@ type ReferenceChunk struct {
 	Vector       []float64              `json:"vector"`
 	Positions    [][]int                `json:"positions"`
 	Image        string                 `json:"img_id"`
-	Term         map[string]any `json:"term_similarity"`
+	Term         map[string]interface{} `json:"term_similarity"`
 }
 
 type Dataset struct {
@@ -111,7 +111,7 @@ type Dataset struct {
 	DocumentCount       int                    `json:"document_count"`
 	ChunkCount          int                    `json:"chunk_count"`
 	ParseMethod         string                 `json:"parse_method"`
-	ParserConfig        map[string]any `json:"parser_config"`
+	ParserConfig        map[string]interface{} `json:"parser_config"`
 	CreateTime          UnixTime               `json:"create_time"`
 	UpdateTime          UnixTime               `json:"update_time"`
 	CreatedBy           string                 `json:"created_by"`
@@ -130,7 +130,7 @@ type CreateDatasetRequest struct {
 	Language            string                 `json:"language,omitempty"`
 	Permission          string                 `json:"permission,omitempty"`
 	ParseMethod         string                 `json:"chunk_method,omitempty"`
-	ParserConfig        map[string]any `json:"parser_config,omitempty"`
+	ParserConfig        map[string]interface{} `json:"parser_config,omitempty"`
 	Avatar              string                 `json:"avatar,omitempty"`
 	EmbeddingModel      string                 `json:"embedding_model,omitempty"`
 	VectorSimilarity    float64                `json:"vector_similarity_weight,omitempty"`
@@ -144,7 +144,7 @@ type UpdateDatasetRequest struct {
 	Language            string                 `json:"language,omitempty"`
 	Permission          string                 `json:"permission,omitempty"`
 	ParseMethod         string                 `json:"parse_method,omitempty"`
-	ParserConfig        map[string]any `json:"parser_config,omitempty"`
+	ParserConfig        map[string]interface{} `json:"parser_config,omitempty"`
 	Avatar              string                 `json:"avatar,omitempty"`
 	EmbeddingModel      string                 `json:"embedding_model,omitempty"`
 	VectorSimilarity    float64                `json:"vector_similarity_weight,omitempty"`
@@ -167,7 +167,7 @@ type Document struct {
 	UpdateTime  UnixTime               `json:"update_time"`
 	CreatedBy   string                 `json:"created_by"`
 	Run         string                 `json:"run"`
-	Parser      map[string]any `json:"parser"`
+	Parser      map[string]interface{} `json:"parser"`
 	Location    string                 `json:"location"`
 }
 
@@ -182,7 +182,7 @@ type Chunk struct {
 	UpdateTime   UnixTime               `json:"update_time"`
 	Positions    [][]int                `json:"positions"`
 	Available    bool                   `json:"available"`
-	TermWeights  map[string]any `json:"term_weights"`
+	TermWeights  map[string]interface{} `json:"term_weights"`
 }
 
 type UpdateChunkRequest struct {
@@ -220,7 +220,7 @@ type Assistant struct {
 	Avatar          string                 `json:"avatar"`
 	Language        string                 `json:"language"`
 	Prompt          Prompt 				   `json:"prompt"`
-	LLMSetting      map[string]any `json:"llm_setting"`
+	LLMSetting      map[string]interface{} `json:"llm_setting"`
 	LLMModel        string                 `json:"llm_model"`
 	DatasetIDs      []string               `json:"dataset_ids"`
 	TopK            int                    `json:"top_k"`
@@ -241,40 +241,67 @@ type Assistant struct {
 	ReRankModel     string                 `json:"rerank_model"`
 }
 
+type CreateAssistantRequestTransformed struct {
+	Name            string                 `json:"name"`
+	Description     string                 `json:"description,omitempty"`
+	Avatar          string                 `json:"avatar,omitempty"`
+	Language        string                 `json:"language,omitempty"`
+	Prompt          Prompt `json:"prompt,omitempty"`
+	LLMSetting      map[string]interface{} `json:"llm_setting,omitempty"`
+	LLMModel        string                 `json:"llm_model,omitempty"`
+	DatasetIDs      []string               `json:"dataset_ids,omitempty"`
+	VectorSimilarityWeight float64         `json:"vector_similarity_weight,omitempty"`
+	TopP            float64                `json:"top_p,omitempty"`
+	Temperature     float64                `json:"temperature,omitempty"`
+	MaxTokens       int                    `json:"max_tokens,omitempty"`
+	PresencePenalty float64                `json:"presence_penalty,omitempty"`
+	FrequencyPenalty float64               `json:"frequency_penalty,omitempty"`
+	ReRank          bool                   `json:"rerank,omitempty"`
+	MaxReference    int                    `json:"max_reference,omitempty"`
+}
+
 type CreateAssistantRequest struct {
 	Name            string                 `json:"name"`
 	Description     string                 `json:"description,omitempty"`
 	Avatar          string                 `json:"avatar,omitempty"`
 	Language        string                 `json:"language,omitempty"`
-	Prompt          *Prompt 				   `json:"prompt,omitempty"`
-	LLMSetting      map[string]any `json:"llm_setting,omitempty"`
+	Prompt          string                 `json:"prompt,omitempty"`
+	LLMSetting      map[string]interface{} `json:"llm_setting,omitempty"`
 	LLMModel        string                 `json:"llm_model,omitempty"`
 	DatasetIDs      []string               `json:"dataset_ids,omitempty"`
+	TopK            int                    `json:"top_k,omitempty"`
+	SimilarityThreshold float64            `json:"similarity_threshold,omitempty"`
 	VectorSimilarityWeight float64         `json:"vector_similarity_weight,omitempty"`
 	TopP            float64                `json:"top_p,omitempty"`
 	Temperature     float64                `json:"temperature,omitempty"`
 	MaxTokens       int                    `json:"max_tokens,omitempty"`
 	PresencePenalty float64                `json:"presence_penalty,omitempty"`
 	FrequencyPenalty float64               `json:"frequency_penalty,omitempty"`
+	ReRank          bool                   `json:"rerank,omitempty"`
+	EmptyResponse   string                 `json:"empty_response,omitempty"`
 	MaxReference    int                    `json:"max_reference,omitempty"`
 	ReRankModel     string                 `json:"rerank_model,omitempty"`
 }
 
 type UpdateAssistantRequest struct {
-	Name            string                 `json:"name"`
+	Name            string                 `json:"name,omitempty"`
 	Description     string                 `json:"description,omitempty"`
 	Avatar          string                 `json:"avatar,omitempty"`
 	Language        string                 `json:"language,omitempty"`
-	Prompt          *Prompt 				   `json:"prompt,omitempty"`
-	LLMSetting      map[string]any `json:"llm_setting,omitempty"`
+	Prompt          string                 `json:"prompt,omitempty"`
+	LLMSetting      map[string]interface{} `json:"llm_setting,omitempty"`
 	LLMModel        string                 `json:"llm_model,omitempty"`
 	DatasetIDs      []string               `json:"dataset_ids,omitempty"`
+	TopK            int                    `json:"top_k,omitempty"`
+	SimilarityThreshold float64            `json:"similarity_threshold,omitempty"`
 	VectorSimilarityWeight float64         `json:"vector_similarity_weight,omitempty"`
 	TopP            float64                `json:"top_p,omitempty"`
 	Temperature     float64                `json:"temperature,omitempty"`
 	MaxTokens       int                    `json:"max_tokens,omitempty"`
 	PresencePenalty float64                `json:"presence_penalty,omitempty"`
 	FrequencyPenalty float64               `json:"frequency_penalty,omitempty"`
+	ReRank          bool                   `json:"rerank,omitempty"`
+	EmptyResponse   string                 `json:"empty_response,omitempty"`
 	MaxReference    int                    `json:"max_reference,omitempty"`
 	ReRankModel     string                 `json:"rerank_model,omitempty"`
 }
@@ -302,7 +329,7 @@ type Agent struct {
 	Description string                 `json:"description"`
 	Avatar      string                 `json:"avatar"`
 	Language    string                 `json:"language"`
-	DSL         map[string]any `json:"dsl"`
+	DSL         map[string]interface{} `json:"dsl"`
 	CreateTime  UnixTime               `json:"create_time"`
 	UpdateTime  UnixTime               `json:"update_time"`
 	CreatedBy   string                 `json:"created_by"`
@@ -314,7 +341,7 @@ type CreateAgentRequest struct {
 	Description string                 `json:"description,omitempty"`
 	Avatar      string                 `json:"avatar,omitempty"`
 	Language    string                 `json:"language,omitempty"`
-	DSL         map[string]any `json:"dsl,omitempty"`
+	DSL         map[string]interface{} `json:"dsl,omitempty"`
 }
 
 type UpdateAgentRequest struct {
@@ -322,7 +349,7 @@ type UpdateAgentRequest struct {
 	Description string                 `json:"description,omitempty"`
 	Avatar      string                 `json:"avatar,omitempty"`
 	Language    string                 `json:"language,omitempty"`
-	DSL         map[string]any `json:"dsl,omitempty"`
+	DSL         map[string]interface{} `json:"dsl,omitempty"`
 }
 
 type DocumentsList struct {
