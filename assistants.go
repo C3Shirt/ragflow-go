@@ -12,6 +12,7 @@ func (c *Client) CreateAssistant(ctx context.Context, req CreateAssistantRequest
 		Name: req.Name,
 		Prompt: Prompt{
 			Prompt: req.Prompt,
+			EmptyResponse: req.EmptyResponse,
 		},
 		LLMModel: TransformLLM{
 			ModelName: req.LLMModel,
