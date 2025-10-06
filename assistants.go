@@ -52,6 +52,7 @@ func (c *Client) UpdateAssistant(ctx context.Context, assistantID string, req Cr
 		Name: req.Name,
 		Prompt: Prompt{
 			Prompt: req.Prompt,
+			EmptyResponse: req.EmptyResponse,
 		},
 		LLMModel: TransformLLM{
 			ModelName: req.LLMModel,
