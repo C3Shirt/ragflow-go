@@ -275,7 +275,7 @@ type CreateAssistantRequest struct {
 	PresencePenalty float64                `json:"presence_penalty,omitempty"`
 	FrequencyPenalty float64               `json:"frequency_penalty,omitempty"`
 	ReRank          bool                   `json:"rerank,omitempty"`
-	EmptyResponse   string                 `json:"empty_response,omitempty"`
+	EmptyResponse   string                 `json:"empty_response"`
 	MaxReference    int                    `json:"max_reference,omitempty"`
 	ReRankModel     string                 `json:"rerank_model,omitempty"`
 }
