@@ -196,7 +196,7 @@ type Variable struct {
 }
 
 type Prompt struct {
-	EmptyResponse             string     `json:"empty_response,omitempty"`
+	EmptyResponse             string     `json:"empty_response"`
 	KeywordsSimilarityWeight  float64    `json:"keywords_similarity_weight,omitempty"`
 	Opener                    string     `json:"opener,omitempty"`
 	Prompt                    string     `json:"prompt,omitempty"`
