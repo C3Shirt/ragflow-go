@@ -191,6 +191,7 @@ func (c *Client) newRequest(ctx context.Context, method, endpoint string, body i
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling request body: %w", err)
 		}
+		log.Println(string(jsonData))
 		buf = bytes.NewBuffer(jsonData)
 	}
 
@@ -219,8 +220,8 @@ func (c *Client) do(req *http.Request, v interface{}) error {
 		return fmt.Errorf("error reading response body: %w", err)
 	}
 
-	log.Println("RAGFLOW REQ:", req)
-	log.Println("RAGFLOW RESP:", string(bodyBytes))
+	//log.Println("RAGFLOW REQ:", req)
+	//log.Println("RAGFLOW RESP:", string(bodyBytes))
 
 	if resp.StatusCode >= 400 {
 		return c.handleErrorResponse(resp.StatusCode, bodyBytes)
