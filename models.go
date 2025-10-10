@@ -263,6 +263,7 @@ type CreateAssistantRequest struct {
 	Avatar          string                 `json:"avatar,omitempty"`
 	Language        string                 `json:"language,omitempty"`
 	Prompt          string                 `json:"prompt,omitempty"`
+	Variables []Variable `json:"variables,omitempty"`
 	LLMSetting      map[string]interface{} `json:"llm_setting,omitempty"`
 	LLMModel        string                 `json:"llm_model,omitempty"`
 	DatasetIDs      []string               `json:"dataset_ids,omitempty"`
