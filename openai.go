@@ -144,10 +144,11 @@ func (c *Client) CreateChatCompletionStreamPassthrough(ctx context.Context, req 
 
 		scanner := bufio.NewScanner(resp.Body)
 		for scanner.Scan() {
-			line := strings.TrimSpace(scanner.Text())
+			txt := scanner.Text()
+			line := strings.TrimSpace(txt)
 
 			select {
-			case passChan <- line:
+			case passChan <- txt:
 			case <-ctx.Done():
 				errChan <- ctx.Err()
 				return
