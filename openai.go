@@ -146,6 +146,12 @@ func (c *Client) CreateChatCompletionStreamPassthrough(ctx context.Context, req 
 		for scanner.Scan() {
 			line := strings.TrimSpace(scanner.Text())
 
+			select {
+			case passChan <- line:
+			case <-ctx.Done():
+				errChan <- ctx.Err()
+				return
+			}
 			if line == "" {
 				continue
 			}
@@ -158,12 +164,6 @@ func (c *Client) CreateChatCompletionStreamPassthrough(ctx context.Context, req 
 				data = line
 			}
 
-			select {
-			case passChan <- line:
-			case <-ctx.Done():
-				errChan <- ctx.Err()
-				return
-			}
 			if data == "[DONE]" {
 				return
 			}
