@@ -134,6 +134,37 @@ func (c *Client) GetFactories(ctx context.Context) ([]Factory, error) {
 	return response.Data, err
 }
 
+func (c *Client) DeleteDatasetUserland(ctx context.Context, kbID string) (bool, error) {
+	req, err := c.newUserRequest(ctx, http.MethodPost, "/v1/kb/rm", struct{
+		KBID string `json:"kb_id"`
+	}{KBID: kbID})
+	if err != nil {
+		return false, err
+	}
+
+	httpRes, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return false, err
+	}
+	defer httpRes.Body.Close()
+	bytes, err := io.ReadAll(httpRes.Body)
+	if err != nil {
+		return false, err
+	}
+
+	var response Response[bool]
+	err = json.Unmarshal(bytes, &response)
+	if err != nil {
+		return false, err
+	}
+
+	if !response.Data {
+		return false, fmt.Errorf(response.Message)
+	}
+
+	return response.Data, err
+}
+
 func (c *Client) SetAPIKey(ctx context.Context, params SetAPIKeyRequest) (bool, error) {
 	req, err := c.newUserRequest(ctx, http.MethodPost, "/v1/llm/set_api_key", params)
 	if err != nil {
