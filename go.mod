@@ -1,4 +1,4 @@
-module github.com/kevinroleke/ragflow-go
+module github.com/C3Shirt/ragflow-go
 
 go 1.21
 
