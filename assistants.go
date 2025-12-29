@@ -1,10 +1,14 @@
 package ragflow
 
 import (
+	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func (c *Client) CreateAssistant(ctx context.Context, req CreateAssistantRequest) (*Assistant, error) {
@@ -93,7 +97,7 @@ type ListAssistantsOptions struct {
 	ID       string
 }
 
-func (c *Client) ListAssistants(ctx context.Context, opts *ListAssistantsOptions) (*ListResponse[Assistant], error) {
+func (c *Client) ListAssistants(ctx context.Context, opts *ListAssistantsOptions) (*Response[[]Assistant], error) {
 	params := make(map[string]string)
 
 	if opts != nil {
@@ -123,7 +127,7 @@ func (c *Client) ListAssistants(ctx context.Context, opts *ListAssistantsOptions
 		return nil, err
 	}
 
-	var resp ListResponse[Assistant]
+	var resp Response[[]Assistant]
 	if err := c.do(httpReq, &resp); err != nil {
 		return nil, err
 	}
@@ -232,4 +236,132 @@ func (c *Client) ListSessions(ctx context.Context, assistantID string, opts *Lis
 	}
 
 	return &resp, nil
+}
+
+// ChatWithSession converses with a chat assistant using a session
+func (c *Client) ChatWithSession(ctx context.Context, chatID string, req ChatWithSessionRequest) (string, error) {
+	req.Stream = true
+	stream, errChan := c.ChatWithSessionStream(ctx, chatID, req)
+
+	var full string
+
+	for {
+		select {
+		case ev, ok := <-stream:
+			if !ok || ev.Done {
+				return full, nil
+			}
+			full += ev.Delta
+
+		case err := <-errChan:
+			if err != nil {
+				return "", err
+			}
+		}
+	}
+}
+
+func (c *Client) ChatWithSessionStream(ctx context.Context, chatID string, req ChatWithSessionRequest) (<-chan ChatStreamEvent, <-chan error) {
+
+	respChan := make(chan ChatStreamEvent)
+	errChan := make(chan error, 1)
+
+	go func() {
+		defer close(respChan)
+		defer close(errChan)
+
+		endpoint := fmt.Sprintf("/api/v1/chats/%s/completions", chatID)
+		req.Stream = true
+
+		httpReq, err := c.newRequest(ctx, http.MethodPost, endpoint, req)
+		if err != nil {
+			errChan <- err
+			return
+		}
+
+		resp, err := c.HTTPClient.Do(httpReq)
+		if err != nil {
+			errChan <- fmt.Errorf("error making request: %w", err)
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			bodyBytes, _ := io.ReadAll(resp.Body)
+			errChan <- c.handleErrorResponse(resp.StatusCode, bodyBytes)
+			return
+		}
+
+		scanner := bufio.NewScanner(resp.Body)
+
+		// ⭐ 非常关键：扩大 buffer，避免长 token 被截断
+		scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+		var fullAnswer string
+		for scanner.Scan() {
+			select {
+			case <-ctx.Done():
+				errChan <- ctx.Err()
+				return
+			default:
+			}
+
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" {
+				continue
+			}
+
+			// 只处理 SSE data 行
+			if !strings.HasPrefix(line, "data:") {
+				continue
+			}
+
+			payload := strings.TrimSpace(strings.TrimPrefix(line, "data:"))
+			var envelope ChatStreamEnvelope
+
+			if err := json.Unmarshal([]byte(payload), &envelope); err != nil {
+				continue
+			}
+
+			// data: true —— 结束信号
+			if string(envelope.Data) == "true" {
+				respChan <- ChatStreamEvent{Done: true}
+				return
+			}
+			// 1️⃣ 先判断是否是 error 包
+			var errResp struct {
+				Code    int    `json:"code"`
+				Message string `json:"message"`
+			}
+			if err := json.Unmarshal([]byte(payload), &errResp); err == nil && errResp.Code != 0 {
+				errChan <- fmt.Errorf("API error %d: %s", errResp.Code, errResp.Message)
+				return
+			}
+
+			// 2️⃣ 正常流式响应
+			var streamResp ChatStreamData
+			if err := json.Unmarshal([]byte(envelope.Data), &streamResp); err != nil {
+				// 流式里偶尔有非结构 JSON，直接跳过
+				continue
+			}
+
+			if streamResp.Answer != "" {
+				delta := streamResp.Answer[len(fullAnswer):]
+				fullAnswer = streamResp.Answer
+
+				respChan <- ChatStreamEvent{
+					Delta:     delta,
+					Full:      fullAnswer,
+					ID:        streamResp.ID,
+					SessionID: streamResp.SessionID,
+					Reference: streamResp.Reference,
+				}
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			errChan <- fmt.Errorf("error reading stream: %w", err)
+		}
+	}()
+
+	return respChan, errChan
 }

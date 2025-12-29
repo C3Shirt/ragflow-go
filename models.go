@@ -356,3 +356,53 @@ type ArrayResponse[T any] struct {
 	Message string `json:"message"`
 	Data    []T    `json:"data"`
 }
+
+// ChatWithSessionRequest represents the request for conversing with a chat assistant
+type ChatWithSessionRequest struct {
+	Question          string             `json:"question"`
+	Stream            bool               `json:"stream,omitempty"`
+	SessionID         string             `json:"session_id,omitempty"`
+	UserID            string             `json:"user_id,omitempty"`
+	MetadataCondition *MetadataCondition `json:"metadata_condition,omitempty"`
+}
+
+// MetadataCondition represents metadata filter conditions
+type MetadataCondition struct {
+	Logic      string           `json:"logic"` // "and" or "or"
+	Conditions []MetadataFilter `json:"conditions"`
+}
+
+// MetadataFilter represents a single metadata filter condition
+type MetadataFilter struct {
+	Name               string      `json:"name"`
+	ComparisonOperator string      `json:"comparison_operator"`
+	Value              interface{} `json:"value,omitempty"`
+}
+
+type ChatStreamEnvelope struct {
+	Code int             `json:"code"`
+	Data json.RawMessage `json:"data"`
+}
+type ChatStreamData struct {
+	Answer      string `json:"answer,omitempty"`
+	Reference   any    `json:"reference,omitempty"`
+	AudioBinary any    `json:"audio_binary,omitempty"`
+	ID          string `json:"id,omitempty"`
+	SessionID   string `json:"session_id,omitempty"`
+}
+type ChatStreamEvent struct {
+	// Delta 是“本次新增的 token”
+	Delta string
+
+	// Full 是“到目前为止的完整内容”（可选）
+	Full string
+
+	// 是否结束
+	Done bool
+
+	// 元信息
+	ID        string
+	SessionID string
+	Reference any
+}
+
